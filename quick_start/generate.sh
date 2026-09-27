@@ -65,7 +65,7 @@ while [[ $# -gt 0 ]]; do
         --model_path=*)    model_path="${1#*=}"    ;;
         --vae_path=*)      vae_path="${1#*=}"      ;;
         --data_path=*)     data_path="${1#*=}"     ;;
-        --input_fps=*)   temporal_sf="${1#*=}"   ;;
+        --input_fps=*)   input_fps="${1#*=}"   ;;
         --temporal_sf=*)   temporal_sf="${1#*=}"   ;;
         --output_dir=*)    output_dir="${1#*=}"    ;;
         --sp_size=*)    sp_size="${1#*=}"    ;;
@@ -138,4 +138,4 @@ accelerate launch $distributed_args generate.py \
 #------------------------------
 
 
-# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh temporal_sf=2 --data_path=/scratch/rohhs/downloads/yt-dlp/death.webm
+# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh temporal_sf=2 --data_path=/scratch/rohhs/downloads/yt-dlp/death.webm --sp_size=2 --sampling_steps=16
