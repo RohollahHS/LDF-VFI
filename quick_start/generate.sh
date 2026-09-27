@@ -48,8 +48,11 @@ num_processes=1
 model_path="${HF_HUB}/LDF-VFI/transformer"
 vae_path="${HF_HUB}/LDF-VFI/Wan2.1_VAE_cond_v2.pth"
 data_path="assets/demo.mp4"
-temporal_sf=8
+temporal_sf=2
 output_dir="${SCRATCH}/projects/LDF-VFI"
+input_fps=30
+sp_size=1
+sampling_steps=16
 
 # ----------------------------
 # Parse user overrides (optional)
@@ -62,8 +65,11 @@ while [[ $# -gt 0 ]]; do
         --model_path=*)    model_path="${1#*=}"    ;;
         --vae_path=*)      vae_path="${1#*=}"      ;;
         --data_path=*)     data_path="${1#*=}"     ;;
+        --input_fps=*)   temporal_sf="${1#*=}"   ;;
         --temporal_sf=*)   temporal_sf="${1#*=}"   ;;
         --output_dir=*)    output_dir="${1#*=}"    ;;
+        --sp_size=*)    sp_size="${1#*=}"    ;;
+        --sampling_steps=*)    sampling_steps="${1#*=}"    ;;
         *)
             echo "Unknown argument: $1" >&2
             exit 1
@@ -101,19 +107,21 @@ vae_args="
 "
 
 generate_args="
-    --sampling_steps=16
+    --sampling_steps=$sampling_steps
     --t_shift=8
 "
+
+output_fps=$(awk "BEGIN {print $input_fps * $temporal_sf}")
 
 task_args="
     --data=$data_path
     --temporal_sf=$temporal_sf
     --output_dir=$output_dir
-    --fps=30
+    --fps=$output_fps
 "
 
 performance_args="
-    --sp_size=1
+    --sp_size=$sp_size
 "
 
 mkdir -p $output_dir
@@ -128,3 +136,6 @@ accelerate launch $distributed_args generate.py \
     2>&1 | tee -a $output_dir/log.txt
 
 #------------------------------
+
+
+# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh temporal_sf=2 --data_path=/scratch/rohhs/downloads/yt-dlp/death.webm
