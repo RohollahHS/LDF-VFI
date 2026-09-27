@@ -111,13 +111,10 @@ generate_args="
     --t_shift=8
 "
 
-output_fps=$(awk "BEGIN {print $input_fps * $temporal_sf}")
-
 task_args="
     --data=$data_path
     --temporal_sf=$temporal_sf
     --output_dir=$output_dir
-    --fps=$output_fps
 "
 
 performance_args="
@@ -138,4 +135,4 @@ accelerate launch $distributed_args generate.py \
 #------------------------------
 
 
-# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh temporal_sf=2 --data_path=/scratch/rohhs/downloads/yt-dlp/death.webm --sp_size=2 --sampling_steps=16
+# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh --temporal_sf=2 --data_path=/scratch/rohhs/downloads/yt-dlp/death.webm --sp_size=1 --sampling_steps=16
