@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 #------------------------------
 SRUN_ARGS="--ntasks=$SLURM_NNODES --ntasks-per-node=1"
 XDG_CACHE_HOME=${SLURM_TMPDIR}/.cache
@@ -37,17 +40,45 @@ module load StdEnv/2023 gcc/12.3 ffmpeg/7.1.1
 module load cuda/12.6
 source $SCRATCH/venvs/LDF-VFI/bin/activate
 
-distributed_args="
-    --num_machines=1
-    --num_processes=1
-"
+# ----------------------------
+# Default values
+# ----------------------------
+num_machines=1
+num_processes=1
 model_path="${HF_HUB}/LDF-VFI/transformer"
 vae_path="${HF_HUB}/LDF-VFI/Wan2.1_VAE_cond_v2.pth"
 data_path="assets/demo.mp4"
 temporal_sf=8
 output_dir="${SCRATCH}/projects/LDF-VFI"
 
-#------------------------------
+# ----------------------------
+# Parse user overrides (optional)
+# Any of these can be passed as --key=value
+# ----------------------------
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --num_machines=*)  num_machines="${1#*=}"  ;;
+        --num_processes=*) num_processes="${1#*=}" ;;
+        --model_path=*)    model_path="${1#*=}"    ;;
+        --vae_path=*)      vae_path="${1#*=}"      ;;
+        --data_path=*)     data_path="${1#*=}"     ;;
+        --temporal_sf=*)   temporal_sf="${1#*=}"   ;;
+        --output_dir=*)    output_dir="${1#*=}"    ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# ----------------------------
+# Derived argument strings
+# ----------------------------
+distributed_args="
+    --num_machines=$num_machines
+    --num_processes=$num_processes
+"
 
 model_args="
     --model_path=$model_path
