@@ -8,13 +8,13 @@ XDG_CACHE_HOME=${SLURM_TMPDIR}/.cache
 XDG_CONFIG_HOME=${SLURM_TMPDIR}/.config
 TRITON_CACHE_DIR=${SLURM_TMPDIR}/.cache/triton
 TMPDIR=${SLURM_TMPDIR}/.cache/tmp
-SGLANG_CACHE_DIR=${SLURM_TMPDIR}/sglang_cache
-SGLANG_JIT_CACHE_DIR=${SLURM_TMPDIR}/sglang_cache_jit
 VLLM_CACHE_ROOT=${SLURM_TMPDIR}/vllm_cache
 VLLM_CONFIG_ROOT=${SLURM_TMPDIR}/vllm_config
 VLLM_ASSETS_CACHE=${SLURM_TMPDIR}/assets_cache
 FLASHINFER_WORKSPACE_BASE=${SLURM_TMPDIR}/flashinfer
 TORCHINDUCTOR_CACHE_DIR=${SLURM_TMPDIR}/torchindictor
+SGLANG_CACHE_DIR=${SLURM_TMPDIR}/sglang_cache
+SGLANG_JIT_CACHE_DIR=${SLURM_TMPDIR}/sglang_cache_jit
 SGLANG_DG_CACHE_DIR=${SLURM_TMPDIR}/sglang_dg
 SGLANG_TORCH_PROFILER_DIR=${SLURM_TMPDIR}/sglang_torch_profiler
 
@@ -34,11 +34,11 @@ srun $SRUN_ARGS mkdir -p ${TORCHINDUCTOR_CACHE_DIR}
 srun $SRUN_ARGS mkdir -p ${SGLANG_DG_CACHE_DIR}
 srun $SRUN_ARGS mkdir -p ${SGLANG_TORCH_PROFILER_DIR}
 
-cd $PROJECTS_DIR/LDF-VFI
+cd /scratch/rohhs/projects/LDF-VFI
 module purge all
 module load StdEnv/2023 gcc/12.3 ffmpeg/7.1.1
 module load cuda/12.6
-source $SCRATCH/venvs/LDF-VFI/bin/activate
+source .venv/LDF-VFI/bin/activate
 
 # ----------------------------
 # Default values
@@ -134,5 +134,8 @@ accelerate launch $distributed_args generate.py \
 
 #------------------------------
 
+# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh --data_path=/scratch/rohhs/projects/belgorod_drone_strike_quarter.mp4 --sp_size=1 --sampling_steps=8
 
-# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh --temporal_sf=2 --data_path=/scratch/rohhs/downloads/yt-dlp/death.webm --sp_size=1 --sampling_steps=16
+# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh --data_path=/scratch/rohhs/projects/belgorod_drone_strike_quarter.mp4 --num_processes=2 --sp_size=2 --sampling_steps=8
+
+# bash $PROJECTS_DIR/LDF-VFI/quick_start/generate.sh --data_path=/scratch/rohhs/projects/belgorod_drone_strike_quarter.mp4 --num_processes=4 --sp_size=2 --sampling_steps=8
